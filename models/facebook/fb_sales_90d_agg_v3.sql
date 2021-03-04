@@ -10,8 +10,7 @@ SELECT
     COUNT(DISTINCT id) AS sales_count,
     ROUND(SUM(CAST(_order_total AS FLOAT64)),2) AS sales,
     ROUND(SUM(CAST(_wc_cog_order_total_cost AS FLOAT64)),2) AS cogs 
-FROM
-    {{ ref('transactions_dbt_test') }}
+from {{ ref('transactions_dbt') }}
 WHERE
     CAST(_paid_date AS TIMESTAMP) >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24*90 HOUR)
 GROUP BY
