@@ -1,3 +1,7 @@
+{{ config (
+    materialized="table"
+)}}
+
 with fb_digital_abs_1 as (SELECT account_name, campaign_name, adset_name, date_start, date_stop, spend, impressions, ctr, clicks  FROM `wm-gcp-data.facebook_digital_abs_1.ads_insights`),
 
  fb_digital_abs_3 as (SELECT account_name, campaign_name, adset_name, date_start, date_stop, spend, impressions, ctr , clicks   FROM `wm-gcp-data.facebook_digital_abs_3.ads_insights`),
