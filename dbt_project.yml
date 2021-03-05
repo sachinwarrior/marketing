@@ -34,5 +34,4 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   marketing:
         facebook: 
-            +materialized: table 
        
