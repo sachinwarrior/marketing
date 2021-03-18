@@ -27,6 +27,7 @@ with full_users_pivot as (
   members_revenue as member_revenue, 
   ecommerce_revenue, 
   type_customer as type_customers, 
+  'no' as alpha_testers
 from  {{ ref('users_pivot_woo') }} )
 UNION ALL 
 (select cast(user_tracking_id as string) as user_tracking_id, 
@@ -54,7 +55,8 @@ UNION ALL
   products_purchased, 
   member_revenue, 
   ecommerce_revenue, 
-  type_customers
+  type_customers, 
+  'no' as alpha_testers
 from  {{ ref('users_pivot_kon') }} ) )
 
 select distinct * from full_users_pivot
