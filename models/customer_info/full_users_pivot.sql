@@ -1,3 +1,6 @@
+{{ config (
+    materialized="table"
+)}}
 (select user_tracking_id, 
   user_email,
   user_id, 
