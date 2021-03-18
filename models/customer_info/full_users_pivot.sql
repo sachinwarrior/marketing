@@ -1,6 +1,7 @@
 {{ config (
     materialized="table"
 )}}
+with full_users_pivot as (
 (select user_tracking_id, 
   user_email,
   user_id, 
@@ -55,4 +56,6 @@ UNION ALL
   member_revenue, 
   ecommerce_revenue, 
   type_customers
-from  {{ ref('users_pivot_kon') }} ) 
+from  {{ ref('users_pivot_kon') }} ) )
+
+select distinct * from full_users_pivot

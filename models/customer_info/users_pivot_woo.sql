@@ -1,8 +1,10 @@
 -- determine what orders are subscription, what orders are upsell associating with that subscription. -> this help determines if the customers take the trial
 with subscription_w_transaction as (select subscription_table.post_date_gmt, subscription_table._billing_email, subscription_table._order_total as _order_total,
-          parse_timestamp("%Y-%m-%d %H:%M:%S",_schedule_start) as trial_date_start, 
-          _schedule_trial_end , 
-          _schedule_cancelled , 
+          cast(parse_timestamp("%Y-%m-%d %H:%M:%S",_schedule_start) as date) as trial_date_start, 
+          case when _schedule_trial_end != '0' then cast(cast(_schedule_trial_end as timestamp) as date)
+          end _schedule_trial_end , 
+          case when  _schedule_cancelled != '0' then cast(cast(_schedule_cancelled as timestamp) as date)
+          end _schedule_cancelled , 
            case when _schedule_end = '0' and _schedule_next_payment !='0' then  cast(parse_timestamp("%Y-%m-%d %H:%M:%S",_schedule_next_payment) as date) 
   when _schedule_end != '0' and _schedule_next_payment = '0' then  cast(parse_timestamp("%Y-%m-%d %H:%M:%S",_schedule_end) as date) 
   when _schedule_end != '0' and _schedule_next_payment != '0' then cast(parse_timestamp("%Y-%m-%d %H:%M:%S",_schedule_next_payment) as date) 
