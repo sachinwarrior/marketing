@@ -20,7 +20,7 @@ with subscription_w_transaction as (select subscription_table.post_date_gmt, sub
        case when array_length(split(_subscription_renewal_order_ids_cache, ':')) >=3 then 
              split(_subscription_renewal_order_ids_cache,':')[OFFSET(1)] end number_sub_orders
         from funnels_processed.subscription_pivot) subscription_table 
- left join (select * from funnels_processed.transactions where post_date >= '2020-11-01' and post_status not in ('wc-failed', 'auto-draft', 'trash')) transactions 
+ left join (select * from {{ref ('transactions_dbt') }} where post_date >= '2020-11-01' and post_status not in ('wc-failed', 'auto-draft', 'trash')) transactions 
  on subscription_table.order_id_sub= cast(transactions.id as string) ),
 
 -- Determine the type of customers using a:0, a;1, a:2 in _subscription_ren.._ids_cache and products_purchased 
@@ -55,7 +55,7 @@ transaction_group_user_id as (select _customer_user as user_id,
       from (select *, 
             case when products_purchased like '%Warrior Made Tribe%' then cast(_order_total as               numeric) - cast(_order_tax as numeric) else 0 end members_revenue, 
             case when products_purchased not like '%Warrior Made Tribe%' then cast(_order_total             as numeric) - cast(_order_tax as numeric) else 0 end ecommerce_revenue
-            from (select * from funnels_processed.transactions where post_date >= '2020-11-01' and post_status not in ('wc-failed', 'auto-draft', 'trash'))       
+            from (select * from {{ref ('transactions_dbt') }} where post_date >= '2020-11-01' and post_status not in ('wc-failed', 'auto-draft', 'trash'))       
             where _customer_user is not null)
       group by _customer_user), 
       
@@ -79,13 +79,13 @@ first_purchase_info as (
       a.order_id as first_product_id,
       a.mktg_affiliate as first_aff_id
     FROM 
-          `funnels_processed.transactions`  A
+          {{ref ('transactions_dbt') }}  A
     INNER JOIN (
                 SELECT 
                   _customer_user, 
                   MIN(post_date) as date_created
                 FROM
-                  `funnels_processed.transactions`
+                  {{ref ('transactions_dbt') }}
                 WHERE post_date >= '2020-11-01' and post_status not in ('wc-failed', 'auto-draft', 'trash')
                 GROUP BY 
                   _customer_user 
@@ -98,13 +98,13 @@ first_purchase_info as (
       a.order_id as latest_product_id,
       a.mktg_affiliate as latest_aff_id
     FROM 
-          `funnels_processed.transactions`  A
+          {{ref ('transactions_dbt') }}  A
     INNER JOIN (
                 SELECT 
                   _customer_user, 
                   MAX(post_date) as date_created
                 FROM
-                  `funnels_processed.transactions` 
+                  {{ref ('transactions_dbt') }}
                 WHERE post_date >= '2020-11-01' and post_status not in ('wc-failed', 'auto-draft', 'trash')
                 GROUP BY 
                   _customer_user 
@@ -116,8 +116,8 @@ billing_cycles_table as (select complete_sales_table._customer_user,
     else complete_sales 
     end billing_cycles
     from
-    (select _customer_user, count(order_id) as complete_sales from      funnels_processed.transactions where products_purchased like '%Warrior Made     Tribe%' and  post_date >= '2020-11-01' and post_status = 'wc-completed' group by _customer_user ) complete_sales_table
-left join (select _customer_user, count(order_id) as refund_sales from funnels_processed.transactions where products_purchased like '%Warrior Made Tribe%' and  post_date >= '2020-11-01' and post_status like '%wc-refund%' group by _customer_user ) refund_sales_table
+    (select _customer_user, count(order_id) as complete_sales from      {{ref ('transactions_dbt') }} where products_purchased like '%Warrior Made     Tribe%' and  post_date >= '2020-11-01' and post_status = 'wc-completed' group by _customer_user ) complete_sales_table
+left join (select _customer_user, count(order_id) as refund_sales from {{ref ('transactions_dbt') }} where products_purchased like '%Warrior Made Tribe%' and  post_date >= '2020-11-01' and post_status like '%wc-refund%' group by _customer_user ) refund_sales_table
 on complete_sales_table._customer_user = refund_sales_table._customer_user)
 
 select users_pivot.*, transaction_n_subscription.* except(user_id), first_purchase_info.* except(_customer_user), latest_purchase_info.* except(_customer_user), billing_cycles
