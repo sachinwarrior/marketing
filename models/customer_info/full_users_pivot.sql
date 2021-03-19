@@ -26,6 +26,8 @@ with full_users_pivot as (
   products_purchased, 
   members_revenue as member_revenue, 
   ecommerce_revenue, 
+  number_orders,
+  digital_programs,
   type_customer as type_customers, 
   'no' as alpha_testers
 from  {{ ref('users_pivot_woo') }} )
@@ -54,7 +56,9 @@ UNION ALL
   order_shipping, order_tax, 
   products_purchased, 
   member_revenue, 
-  ecommerce_revenue, 
+  ecommerce_revenue,
+  number_orders, 
+  null as digital_programs, 
   type_customers, 
   'no' as alpha_testers
 from  {{ ref('users_pivot_kon') }} ) )
