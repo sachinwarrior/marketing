@@ -23,7 +23,7 @@ spend as (select
         sum(payout) as payout 
     from (select *, case when campaign_name = '3' or campaign_name ='25' then 'abs'
         when campaign_name = '27' then 'keto carbs'
-        when campaign_name = '14' then 'sweet treats'
+        when campaign_name = '14' then 'keto sweet'
         when campaign_name = '17' then 'go2protein'
         end funnel_campaign
          from hasoffers.spend_clean_aggregated)
