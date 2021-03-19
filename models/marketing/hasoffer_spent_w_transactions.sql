@@ -5,22 +5,23 @@
 with jb_woo as (select 
         date,
         mktg_custom_1,
+        funnel, 
         sum(sales) as sales,
         sum(trials) as trials, 
         sum(sales_count) as sales_count, 
         sum(cogs) as cogs 
-    from {{ref('jb_woo_aggregated')}}
-    group by date, mktg_custom_1), 
+    from marketing.jb_woo_aggregated
+    group by date, funnel, mktg_custom_1), 
 spend as (select 
         date as ad_date, 
         affiliate_name, affiliate_id, 
+        campaign_name,
         sum(clicks) as clicks, 
         sum(conversions) as conversions, 
-        string_agg(campaign_name,',') as campaign_name, 
         string_agg(offer_id,',') as offer_id, 
         sum(payout) as payout 
-    from {{ref('spend_clean_aggregated')}}
-    group by date, affiliate_name, affiliate_id)
+    from hasoffers.spend_clean_aggregated
+    group by date, affiliate_name, affiliate_id, campaign_name)
 
 select *
 from spend
