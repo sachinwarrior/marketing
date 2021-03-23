@@ -1,4 +1,4 @@
-sSELECT
+SELECT
   * 
 FROM(
   SELECT 
