@@ -12,7 +12,7 @@ SELECT
     ROUND(SUM(CAST(_wc_cog_order_total_cost AS FLOAT64)),2) AS cogs 
 from {{ ref('transactions_dbt') }}
 WHERE
-    CAST(_paid_date AS TIMESTAMP) >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24*90 HOUR)
+    CAST(_paid_date AS TIMESTAMP) >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24*90 HOUR) and post_status in ('wc-completed','wc-processing')
 GROUP BY
     order_date,
     ad_id

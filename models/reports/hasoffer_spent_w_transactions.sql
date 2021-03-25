@@ -10,7 +10,7 @@ with jb_woo as (select
         sum(trials) as trials, 
         sum(sales_count) as sales_count, 
         sum(cogs) as cogs 
-    from marketing.jb_woo_aggregated
+    from {{ ref('jb_woo_aggregated') }} 
     group by date, funnel, mktg_custom_1), 
 spend as (select 
         date as ad_date, 
@@ -26,7 +26,7 @@ spend as (select
         when campaign_name = '14' then 'keto sweet'
         when campaign_name = '17' then 'go2protein'
         end funnel_campaign
-         from hasoffers.spend_clean_aggregated)
+         from {{ref('spend_clean_aggregated')}})
     group by date, affiliate_name, affiliate_id, funnel_campaign, campaign_name)
 
 select *
