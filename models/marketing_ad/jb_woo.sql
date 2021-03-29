@@ -21,7 +21,7 @@ SELECT
 FROM
         {{ref('transactions_dbt')}}
 WHERE
-    CAST(_paid_date AS TIMESTAMP) >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24*90 HOUR) 
+    CAST(_paid_date AS TIMESTAMP) >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24*90 HOUR) and and post_status in ('wc-completed','wc-processing') 
 GROUP BY
     order_date,
     affiliate,
