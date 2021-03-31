@@ -8,5 +8,6 @@ FROM(
     * except(event_properties),
     JSON_EXTRACT_SCALAR(event_properties, '$.status') as status,
     JSON_EXTRACT_SCALAR(event_properties, '$.complete_time') as complete_time,
+    JSON_EXTRACT_SCALAR(user_properties, '$.email') as email,
   FROM test_events.onboarding_general
 )
