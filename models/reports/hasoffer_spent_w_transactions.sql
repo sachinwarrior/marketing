@@ -26,8 +26,7 @@ spend as (select
         conversions, 
         offer_id, 
        payout 
-    from {{ref('spend_clean_aggregated')}}
-    group by date, affiliate_name, affiliate_id, funnel_campaign, campaign_name)
+    from {{ref('spend_clean_aggregated')}})
 
 select *
 from spend
