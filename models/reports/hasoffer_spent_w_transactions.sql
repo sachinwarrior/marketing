@@ -12,21 +12,21 @@ with jb_woo as (select
         sum(cogs) as cogs 
     from {{ ref('jb_woo_aggregated') }} 
     group by date, funnel, mktg_custom_1), 
+
 spend as (select 
         date as ad_date, 
         affiliate_name, affiliate_id, 
-        funnel_campaign,
-        campaign_name,
-        sum(clicks) as clicks, 
-        sum(conversions) as conversions, 
-        string_agg(offer_id,',') as offer_id, 
-        sum(payout) as payout 
-    from (select *, case when campaign_name = '3' or campaign_name ='25' then 'abs'
+        case when campaign_name = '3' or campaign_name ='25' then 'abs'
         when campaign_name = '27' then 'keto carbs'
         when campaign_name = '14' then 'keto sweet'
         when campaign_name = '17' then 'go2protein'
-        end funnel_campaign
-         from {{ref('spend_clean_aggregated')}})
+        end funnel_campaign,
+        campaign_name,
+        clicks, 
+        conversions, 
+        offer_id, 
+       payout 
+    from {{ref('spend_clean_aggregated')}}
     group by date, affiliate_name, affiliate_id, funnel_campaign, campaign_name)
 
 select *
