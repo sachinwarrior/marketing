@@ -41,4 +41,4 @@ select * except(date, mktg_custom_1, funnel, sales, trials, sales_count, cogs),
   case when sales_count is null then 0 else sales_count end sales_count, 
   case when cogs is null then 0 else cogs end cogs,
 from hasoffer_spent
-where affiliate_name is not null
+where affiliate_name is not null and payout != 0
