@@ -1,3 +1,7 @@
+{{ config (
+    materialized="table"
+)}}
+
 with customers_info_w_member as ((select 
       customers.customer_id as user_tracking_id,
       customers.email_address as user_email, 
@@ -13,27 +17,30 @@ with customers_info_w_member as ((select
       customers.state as shipping_state, 
       customers.country as shipping_country, 
       customers.zipcode as shipping_postcode, 
-      '' as wc_last_active, 
-      '' as django_user, 
        subscription_date.trial_date_start,
       subscription_date._schedule_trial_end, 
       subscription_date._schedule_cancelled,
       subscription_date._schedule_next_payment,
       -- removing the trial (which counts as 1 in billing_cycles)
       customers.billing_cycles - 1  as billing_cycles,
-      customers.current_status as post_status, 
+      customers.current_status, 
       customers.full_order_id,
-      customers.first_product_id as first_order_id, 
+      customers.first_product_id as first_order_id,
       customers.latest_product_id as latest_order_id,
       customers.mktg_affiliate,
       customers.first_aff_id, 
       customers.latest_aff_id, 
+			customers.first_mktg_custom_1,
+			customers.first_mktg_custom_2,
+			customers.latest_mktg_custom_1, 
+			customers.latest_mktg_custom_2,
       customers.total_purchased as total_amount,
       customers.shipping_cost as order_shipping, 
       customers.sales_tax as order_tax,
       customers.products_purchased,  
-      case when customers.billing_cycles is null then 'ecommerce only - konnektive'       when customers.billing_cycles = 1 then 'ecommerce to trial - konnektive' 
-      else 'trial to subscription - konnektive'
+			customers.total_refunded,
+      case when customers.current_status is null and customers.type_customers is null then 'ecommerce only'
+      else customers.type_customers
       end type_customers
 from (select distinct * from konnektive.customers ) customers
 
@@ -51,13 +58,13 @@ membership_revenue as (select sales.customer_id,
   end as orders
 FROM (select customer_id, SUM(total_amount) as sales_member_revenue, count(transaction_id) as complete_transaction from (select *
   from konnektive.transactions_cleaned 
-  where status != '' and status != '0' and status is not null)
-where txn_type = 'SALE' AND response_type = 'SUCCESS'
+  where status != '' and status != '0' and status is not null and product  not like '%Go2Protein Subscription%' and product not like '%Bundle Subscription%' and product not like '%Hormone Optimization%')
+where txn_type = 'SALE' AND response_type = 'SUCCESS' 
 group by customer_id) sales
 
 LEFT JOIN (select customer_id, SUM(total_amount) as refund_member_revenue, count(transaction_id) as refund_transaction from (select *
   from konnektive.transactions_cleaned 
-  where status != '' and status != '0' and status is not null)
+  where status != '' and status != '0' and status is not null and product  not like '%Go2Protein Subscription%' and product not like '%Bundle Subscription%' and product not like '%Hormone Optimization%' )
 where txn_type = 'REFUND' AND response_type = 'SUCCESS'
 group by customer_id) refund 
 ON sales.customer_id = refund.customer_id),
@@ -73,13 +80,13 @@ non_membership_revenue  as (select sales.customer_id,
   end as orders
 FROM (select customer_id, SUM(total_amount) as sales_ecommerce_revenue, count(transaction_id) as complete_transaction from (select *
   from konnektive.transactions_cleaned 
-  where status = '' or status = '0' or status is null)
+  where (status = '' or status = '0' or status is null) and product not like '%WM%' and product not like '%Warrior Made%' and product not like '%Membership%')
 where txn_type = 'SALE' AND response_type = 'SUCCESS'
 group by customer_id) sales
 
 LEFT JOIN (select customer_id, SUM(total_amount) as refund_ecommerce_revenue, count(transaction_id) as refund_transaction from (select *
   from konnektive.transactions_cleaned 
-  where status = '' or status = '0' or status is null)
+  where (status = '' or status = '0' or status is null) and product not like '%WM%' and product not like '%Warrior Made%' and product not like '%Membership%')
 where txn_type = 'REFUND' AND response_type = 'SUCCESS'
 group by customer_id) refund 
 ON sales.customer_id = refund.customer_id),
@@ -104,7 +111,9 @@ group by customer_id),
 
 
 users_pivot_kon as (select * except(type_customers, customer_id, billing_cycles), 
-case when type_customers like '%trial to subscription%' and member_revenue = 0 and ecommerce_revenue !=0  then 'ecommerce to trial - konnektive' 
+case when type_customers like '%trial to subscription%' and member_revenue = 0 and ecommerce_revenue !=0  then 'ecommerce to trial' 
+when type_customers is null and member_revenue != 0 then 'trial to subscription' 
+when type_customers is null and member_revenue =0 and ecommerce_revenue !=0 then 'ecommerce only'
 when member_revenue = 0 and ecommerce_revenue = 0 then '' 
 else type_customers 
 end type_customers, 
