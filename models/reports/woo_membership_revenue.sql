@@ -57,7 +57,7 @@ from  membership_revenue
 full outer join  trials_table
 on trials_table.order_date_jb=membership_revenue.order_date_trans and trials_table.affiliate=membership_revenue.mktg_affiliate_trans and trials_table.mktg_custom_1b= membership_revenue.mktg_custom_1a and trials_table.mktg_custom_2b= membership_revenue.mktg_custom_2a
 order by order_date desc)
-select order_date, sum(trials) as trials, sum(order_total) as order_total from woo_member_rev group by order_date order by order_date desc
+select * from woo_member_rev order by order_date desc
 
 
 
