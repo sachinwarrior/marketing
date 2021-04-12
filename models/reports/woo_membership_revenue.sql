@@ -2,15 +2,32 @@
     materialized="table"
 )}}
 
-with transactions as (select order_date_trans, mktg_affiliate as mktg_affiliate_trans, mktg_custom_1 as mktg_custom_1a, mktg_custom_2 as mktg_custom_2a, 
-    sum(cast(_order_total as numeric)) as order_total, 
-    from (select *, CAST(CAST(_paid_date AS DATETIME) AS DATE) AS order_date_trans from {{ref('transactions_dbt')}}) 
-    where cast(_paid_date as timestamp) >= '2020-11-01' and post_status in ('wc-completed','wc-processing') and products_purchased like '%Warrior Made Tribe%'
-    group by order_date_trans, mktg_affiliate, mktg_custom_1, mktg_custom_2 order by order_date_trans desc),
+-- join the customer_id and the corresponding post_parent id to get the aff_id and mktg_custom
+with aff_id_table as ( 
+select * except(_customer_user, id, post_parent) 
+from (select _customer_user as user_id, id, mktg_affiliate, mktg_custom_1, mktg_custom_2 from dbt_marketing.transactions_dbt where cast(_paid_date as timestamp) >= '2020-10-25' and post_status in ('wc-completed','wc-processing')) transactions 
+inner join (select _customer_user, post_parent from funnels_processed.subscription_pivot where _sdc_deleted_at is null) subscription 
+on transactions.user_id = subscription._customer_user and subscription.post_parent = transactions.id),
 
+-- getting member who successfully buy the subscription 
+member_trans as (select * 
+from (select _customer_user, cast(_order_total as numeric) as order_total, CAST(CAST(_paid_date AS DATETIME) AS DATE) AS order_date
+      from dbt_marketing.transactions_dbt
+    where cast(_paid_date as timestamp) >= '2020-10-25' and post_status in ('wc-completed','wc-processing') and products_purchased like '%Warrior Made Tribe%') transactions
+left join aff_id_table 
+on aff_id_table.user_id = transactions._customer_user 
+where user_id is not null
+order by order_date desc), 
+
+-- grouping the total revenue of subscription per day
+membership_revenue as (select order_date as order_date_trans,  mktg_affiliate as mktg_affiliate_trans, 
+    mktg_custom_1 as mktg_custom_1a, mktg_custom_2 as mktg_custom_2a,sum(order_total) as order_total
+from member_trans group by order_date, mktg_affiliate, mktg_custom_1, mktg_custom_2), 
+
+-- getting the number of trials per day
 trials_table as ((select CAST(CAST(_paid_date AS DATETIME) AS DATE) AS order_date_jb, mktg_affiliate as affiliate, mktg_custom_1 as mktg_custom_1b, mktg_custom_2 as mktg_custom_2b, 
         COUNT(CAST(trial_take AS INT64)) AS trials, 
-        from {{ref('transactions_dbt')}} where  cast(_paid_date as timestamp) >= '2020-11-01' and post_status in ('wc-completed','wc-processing') 
+        from dbt_marketing.transactions_dbt where  cast(_paid_date as timestamp) >= '2020-11-01' and post_status in ('wc-completed','wc-processing') 
         group by order_date_jb, affiliate, mktg_custom_1,mktg_custom_2))
 
 select 
@@ -31,11 +48,11 @@ select
  else mktg_custom_2a
  end mktg_custom_2,
  order_total, trials
-from  transactions 
+from  membership_revenue 
 full outer join  trials_table
 
-on trials_table.order_date_jb=transactions.order_date_trans and trials_table.affiliate=transactions.mktg_affiliate_trans
-order by order_date
+on trials_table.order_date_jb=membership_revenue.order_date_trans and trials_table.affiliate=membership_revenue.mktg_affiliate_trans
+order by order_date desc
 
 
 
