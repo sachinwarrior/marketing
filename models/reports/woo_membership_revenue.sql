@@ -5,7 +5,7 @@
 -- join the customer_id and the corresponding post_parent id to get the aff_id and mktg_custom
 with aff_id_table as ( 
 select * except(_customer_user, id, post_parent) 
-from (select _customer_user as user_id, id, mktg_affiliate, mktg_custom_1, mktg_custom_2 from dbt_marketing.transactions_dbt where cast(_paid_date as timestamp) >= '2020-10-25' and post_status in ('wc-completed','wc-processing')) transactions 
+from (select _customer_user as user_id, id, products_purchased, mktg_affiliate, mktg_custom_1, mktg_custom_2 from dbt_marketing.transactions_dbt where cast(_paid_date as timestamp) >= '2020-10-25' and post_status in ('wc-completed','wc-processing')) transactions 
 inner join (select _customer_user, post_parent from funnels_processed.subscription_pivot where _sdc_deleted_at is null) subscription 
 on transactions.user_id = subscription._customer_user and subscription.post_parent = transactions.id),
 
@@ -20,15 +20,15 @@ where user_id is not null
 order by order_date desc), 
 
 -- grouping the total revenue of subscription per day
-membership_revenue as (select order_date as order_date_trans,  mktg_affiliate as mktg_affiliate_trans, 
+membership_revenue as (select order_date as order_date_trans,products_purchased as products_purchased_a,  mktg_affiliate as mktg_affiliate_trans, 
     mktg_custom_1 as mktg_custom_1a, mktg_custom_2 as mktg_custom_2a, sum(order_total) as order_total
-from member_trans group by order_date, mktg_affiliate, mktg_custom_1, mktg_custom_2), 
+from member_trans group by order_date, products_purchased, mktg_affiliate, mktg_custom_1, mktg_custom_2), 
 
 -- getting the number of trials per day
-trials_table as ((select CAST(CAST(_paid_date AS DATETIME) AS DATE) AS order_date_jb, mktg_affiliate as affiliate, mktg_custom_1 as mktg_custom_1b, mktg_custom_2 as mktg_custom_2b, 
+trials_table as ((select CAST(CAST(_paid_date AS DATETIME) AS DATE) AS order_date_jb, products_purchased as products_purchased_b, mktg_affiliate as affiliate, mktg_custom_1 as mktg_custom_1b, mktg_custom_2 as mktg_custom_2b, 
         COUNT(CAST(trial_take AS INT64)) AS trials, 
         from {{ref('transactions_dbt')}} where  cast(_paid_date as timestamp) >= '2020-11-01' and post_status in ('wc-completed','wc-processing') 
-        group by order_date_jb, affiliate, mktg_custom_1,mktg_custom_2)),
+        group by order_date_jb, products_purchased, affiliate, mktg_custom_1,mktg_custom_2)),
 
 woo_member_rev as (select 
  case when order_date_trans is null and order_date_jb is not null then order_date_jb
@@ -47,6 +47,10 @@ woo_member_rev as (select
  when mktg_custom_2a is  null and mktg_custom_2b is not null then mktg_custom_2b
  else mktg_custom_2a
  end mktg_custom_2,
+ case when products_purchased_a is not null and products_purchased_b is null then products_purchased_a
+ when products_purchased_a is  null and products_purchased_b is not null then products_purchased_b
+ else products_purchased_a
+ end products_purchased,
  case when order_total is not null then order_total
  else 0 
  end order_total,
