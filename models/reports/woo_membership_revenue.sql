@@ -29,8 +29,7 @@ select * except (_customer_user,trial_take),
 case when trial_take is null and order_total is not null then '1'
 else trial_take 
 end trial_take 
-from member_trans where trial_take is null
-
+from member_trans 
 
 
 
