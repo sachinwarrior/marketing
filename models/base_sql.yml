@@ -1,8 +1,0 @@
-version: 2
-
-sources:
-  - name: facebook_digital_abs_3
-    description: Facebook data. This is the ads_insights table for a facebook account 
-    tables:
-      - name: ads_insights
-         
