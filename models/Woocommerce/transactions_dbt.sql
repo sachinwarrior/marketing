@@ -5,7 +5,12 @@
 WITH
   transactions_pivot AS (
     SELECT
-      *
+      *, 
+      case when utm_campaign like '%keto-carbs%'  then 'keto carbs'
+      when utm_campaign like '%abs%' then 'abs' 
+      when utm_campaign like '%go2protein%' or utm_campaign like 'go2protien' then 'go2protein'
+      when utm_campaign like '%keto-sweet%' then 'keto sweet'
+      end as funnel,
     FROM
       funnels_processed.transactions_pivot
     ORDER BY
