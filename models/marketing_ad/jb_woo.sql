@@ -17,7 +17,10 @@ SELECT
     when utm_campaign like '%abs%' then 'abs' 
     when utm_campaign like '%go2protein%' or utm_campaign like 'go2protien' then 'go2protein'
     when utm_campaign like '%keto-sweet%' then 'keto sweet'
-    end as funnel
+    end as funnel, 
+    case when _shipping_country is not null then _shipping_country
+    else _billing_country 
+    end as country
 FROM
         {{ref('transactions_dbt')}}
 WHERE
@@ -27,6 +30,6 @@ GROUP BY
     affiliate,
     mktg_custom_1,
     mktg_custom_2,
-    products, utm_campaign 
+    products, utm_campaign, country 
 ORDER BY
     order_date DESC 
