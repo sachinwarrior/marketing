@@ -14,13 +14,14 @@ with subscription_pivot as (select  _customer_user,
   when _schedule_end != '0' and _schedule_next_payment = '0' then  cast(parse_timestamp("%Y-%m-%d %H:%M:%S",_schedule_end) as date) 
   when _schedule_end != '0' and _schedule_next_payment != '0' then cast(parse_timestamp("%Y-%m-%d %H:%M:%S",_schedule_next_payment) as date) 
   end _schedule_next_payment,       
-          from funnels_processed.subscription_pivot ), 
+          from funnels_processed.subscription_pivot 
+          where _billing_period = 'month' and _schedule_next_payment <>'0'), 
 
 post_parent_table as (select subscription._customer_user, post_parent,order_id, _billing_email, post_status, order_status, post_date_gmt, 
             _schedule_trial_end, trial_date_start, _schedule_cancelled, _schedule_next_payment, 
 
                   from (select * from subscription_pivot where _sdc_deleted_at is null) subscription
-                left join (select _customer_user, id as order_id, post_status as order_status from {{ref('transactions_dbt')}} where post_date >= '2020-10-25' and post_status in ('wc-completed','wc-                       processing') and products_purchased not like '%Warrior Made%') post_parent_id 
+                left join (select _customer_user, id as order_id, post_status as order_status from {{ref('transactions_dbt')}} where post_date >= '2020-10-25' and post_status in ('wc-completed','wc-processing') and products_purchased not like '%Warrior Made%') post_parent_id 
                  on subscription._customer_user= post_parent_id._customer_user and subscription.post_parent= post_parent_id.order_id
  ),
  
