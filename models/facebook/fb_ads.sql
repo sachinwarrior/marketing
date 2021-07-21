@@ -30,8 +30,25 @@ with fb_digital_abs_1 as (SELECT ad_name,ad_id as fb_ad_id, account_id, account_
     fb_keto_carbs_11 as (SELECT ad_name,ad_id as fb_ad_id, account_id,account_name,campaign_id, adset_id, campaign_name, adset_name, date_start, date_stop, spend, impressions, ctr, clicks     FROM `wm-gcp-data.facebook_keto_carbs_11.ads_insights`), 
     
     fb_keto_carbs_12 as (SELECT ad_name,ad_id as fb_ad_id, account_id,account_name,campaign_id, adset_id, campaign_name, adset_name, date_start, date_stop, spend, impressions, ctr, clicks     FROM `wm-gcp-data.facebook_keto_carbs_12.ads_insights`),
+
+    fb_acct_id_1102834396733832 as (SELECT ad_name,ad_id as fb_ad_id, account_id,account_name,campaign_id, adset_id, campaign_name, adset_name, date_start, date_stop, spend, impressions, ctr, clicks     FROM `wm-gcp-data.fb_acct_id_1102834396733832.ads_insights`),
+
+    fb_acct_id_141973277118416 as (SELECT ad_name,ad_id as fb_ad_id, account_id,account_name,campaign_id, adset_id, campaign_name, adset_name, date_start, date_stop, spend, impressions, ctr, clicks     FROM `wm-gcp-data.fb_acct_id_141973277118416.ads_insights`),
+
+    fb_acct_id_436184693398179 as (SELECT ad_name,ad_id as fb_ad_id, account_id,account_name,campaign_id, adset_id, campaign_name, adset_name, date_start, date_stop, spend, impressions, ctr, clicks     FROM `wm-gcp-data.fb_acct_id_436184693398179.ads_insights`),
     
-     
+    fb_acct_id_436885659994749 as (SELECT ad_name,ad_id as fb_ad_id, account_id,account_name,campaign_id, adset_id, campaign_name, adset_name, date_start, date_stop, spend, impressions, ctr, clicks     FROM `wm-gcp-data.fb_acct_id_436885659994749.ads_insights`),
+
+    fb_acct_id_437257933290855 as (SELECT ad_name,ad_id as fb_ad_id, account_id,account_name,campaign_id, adset_id, campaign_name, adset_name, date_start, date_stop, spend, impressions, ctr, clicks     FROM `wm-gcp-data.fb_acct_id_437257933290855.ads_insights`),
+
+    fb_acct_id_439433613073287 as (SELECT ad_name,ad_id as fb_ad_id, account_id,account_name,campaign_id, adset_id, campaign_name, adset_name, date_start, date_stop, spend, impressions, ctr, clicks     FROM `wm-gcp-data.fb_acct_id_439433613073287.ads_insights`),
+
+    fb_acct_id_548205569382922 as (SELECT ad_name,ad_id as fb_ad_id, account_id,account_name,campaign_id, adset_id, campaign_name, adset_name, date_start, date_stop, spend, impressions, ctr, clicks     FROM `wm-gcp-data.fb_acct_id_548205569382922.ads_insights`),
+
+    fb_acct_id_710672379706157 as (SELECT ad_name,ad_id as fb_ad_id, account_id,account_name,campaign_id, adset_id, campaign_name, adset_name, date_start, date_stop, spend, impressions, ctr, clicks     FROM `wm-gcp-data.fb_acct_id_710672379706157.ads_insights`),
+
+    fb_acct_id_905812309850040 as (SELECT ad_name,ad_id as fb_ad_id, account_id,account_name,campaign_id, adset_id, campaign_name, adset_name, date_start, date_stop, spend, impressions, ctr, clicks     FROM `wm-gcp-data.fb_acct_id_905812309850040.ads_insights`),
+
   fb_ads as (select * 
   from fb_digital_abs_1
 UNION ALL 
@@ -75,6 +92,32 @@ UNION ALL
   from fb_keto_carbs_11
 UNION ALL 
   select * 
-  from fb_keto_carbs_12) 
-
+  from fb_keto_carbs_12
+UNION ALL 
+  select * 
+  from fb_acct_id_1102834396733832
+UNION ALL 
+  select * 
+  from fb_acct_id_141973277118416
+UNION ALL 
+  SELECT *
+  from fb_acct_id_436184693398179
+UNION ALL
+  SELECT * 
+  FROM fb_acct_id_436885659994749
+UNION ALL 
+  SELECT * 
+  FROM fb_acct_id_437257933290855
+UNION ALL 
+  SELECT * 
+  FROM fb_acct_id_439433613073287
+UNION ALL 
+  SELECT * 
+  FROM fb_acct_id_548205569382922
+UNION ALL 
+  SELECT * 
+  FROM fb_acct_id_710672379706157
+UNION ALL 
+  SELECT * 
+  FROM fb_acct_id_905812309850040)
 select * from fb_ads
