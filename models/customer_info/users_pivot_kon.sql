@@ -24,6 +24,7 @@ with customers_info_w_member as ((select
       '' as shipping_address_2, 
       '' as billing_address_1, 
       '' as billing_address_2, 
+      '' as shipping_company, 
       customers.city, customers.state,
       customers.zipcode as postal_code, 
       customers.phone_number as phone,
