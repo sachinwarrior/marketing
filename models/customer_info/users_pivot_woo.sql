@@ -145,9 +145,19 @@ left join (select _customer_user, count(order_id) as refund_sales from {{ref('tr
 on complete_sales_table._customer_user = refund_sales_table._customer_user), 
 
 users_pivot as (select user_tracking_id, user_email, user_id, user_registered, 
-                first_name,last_name, billing_phone,
-                shipping_city, shipping_state, shipping_postcode, shipping_country,
-                billing_city, billing_state, billing_postcode, billing_country
+                first_name,last_name, 
+                billing_address_1 as address1, billing_address_2 as address2,
+                billing_city as city, billing_state as state, 
+                billing_postcode as postal_code,billing_country as country, 
+                billing_phone as phone,
+                billing_first_name, billing_last_name,
+                shipping_first_name, shipping_last_name, 
+                shipping_address_1, shipping_address_2,
+                user_email as shipping_email, 
+                '' as shipping_address_id,
+                shipping_city, shipping_state, shipping_postcode as shipping_postal_code, shipping_country,
+                billing_address_1, billing_address_2, 
+                billing_phone,billing_city, billing_state, billing_postcode as billing_postal_code, billing_country
               from funnels_processed.users_pivot),
 
 users_pivot_woo as (select users_pivot.*, type_customer_2.* except(_customer_user), first_purchase_info.* except(_customer_user), latest_purchase_info.* except(_customer_user), 
