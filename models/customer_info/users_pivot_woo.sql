@@ -154,7 +154,7 @@ users_pivot as (select user_tracking_id, user_email, user_id, user_registered,
                 shipping_first_name, shipping_last_name, 
                 shipping_address_1, shipping_address_2,
                 user_email as shipping_email, 
-                '' as shipping_address_id,
+                _shipping_address_index as shipping_address_id,
                 shipping_city, shipping_state, shipping_postcode as shipping_postal_code, shipping_country,
                 billing_address_1, billing_address_2, 
                 billing_phone,billing_city, billing_state, billing_postcode as billing_postal_code, billing_country
