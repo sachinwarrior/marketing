@@ -74,6 +74,10 @@ select distinct * from (select
   when kon.billing_address_2 is not null and (woo.billing_address_2 is null or woo.billing_address_2 = '') then kon.billing_address_2
   end billing_address_2,
 
+  case when woo.shipping_company !='' and woo.shipping_company is not null then woo.shipping_company 
+  when kon.shipping_company is not null and (woo.shipping_company is null or woo.shipping_company = '') then kon.shipping_company
+  end shipping_company,
+
   case when woo.shipping_address_1 !='' and woo.shipping_address_1 is not null then woo.shipping_address_1 
   when kon.shipping_address_1 is not null and (woo.shipping_address_1 is null or woo.shipping_address_1 = '') then kon.shipping_address_1
   end shipping_address_1,
