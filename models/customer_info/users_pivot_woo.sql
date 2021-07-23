@@ -120,7 +120,8 @@ latest_purchase_info as (
       a.order_id as latest_product_id,
       a.mktg_custom_1 as latest_mktg_custom_1, 
       a.mktg_custom_2 as latest_mktg_custom_2,
-      a.mktg_affiliate as latest_aff_id
+      a.mktg_affiliate as latest_aff_id, 
+      a._shipping_address_index as shipping_address_id
     FROM 
           {{ref('transactions_dbt')}}  A
     INNER JOIN (
@@ -154,7 +155,6 @@ users_pivot as (select user_tracking_id, user_email, user_id, user_registered,
                 shipping_first_name, shipping_last_name, 
                 shipping_address_1, shipping_address_2,
                 user_email as shipping_email, 
-                _shipping_address_index as shipping_address_id,
                 shipping_company,
                 shipping_city, shipping_state, shipping_postcode as shipping_postal_code, shipping_country,
                 billing_address_1, billing_address_2, 
