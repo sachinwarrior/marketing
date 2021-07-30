@@ -121,7 +121,8 @@ latest_purchase_info as (
       a.mktg_custom_1 as latest_mktg_custom_1, 
       a.mktg_custom_2 as latest_mktg_custom_2,
       a.mktg_affiliate as latest_aff_id, 
-      a._shipping_address_index as shipping_address_id
+      a._shipping_address_index as shipping_address_id, 
+      a._wc_authorize_net_cim_credit_card_payment_token as customer_profile_id, 
     FROM 
           {{ref('transactions_dbt')}}  A
     INNER JOIN (
