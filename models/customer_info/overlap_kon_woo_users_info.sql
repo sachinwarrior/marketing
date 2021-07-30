@@ -118,6 +118,7 @@ select distinct * from (select
   when kon.phone is not null and (woo.phone is null or woo.phone = '') then kon.phone
   end phone,
 
+
   case when woo.postal_code !='' and woo.postal_code is not null then woo.postal_code 
   when kon.postal_code is not null and (woo.postal_code is null or woo.postal_code = '') then kon.postal_code
   end postal_code,
@@ -223,6 +224,11 @@ select distinct * from (select
   when kon.latest_aff_id is not null and woo.latest_aff_id is not null then concat(kon.latest_aff_id, ', ', woo.latest_aff_id)
   end latest_aff_id,
   
+  case when kon.customer_profile_id is not null and woo.customer_profile_id is null then cast(kon.customer_profile_id as string)
+  when kon.customer_profile_id is null and woo.customer_profile_id is not null then cast(woo.customer_profile_id as string)
+  when kon.customer_profile_id is not null and woo.customer_profile_id is not null then concat(kon.customer_profile_id, ', ', woo.customer_profile_id)
+  end customer_profile_id,
+
   kon.total_amount + woo.total_amount as total_amount, 
   kon.order_shipping + woo.order_shipping as order_shipping, 
   kon.order_tax + woo.order_tax as order_tax, 
