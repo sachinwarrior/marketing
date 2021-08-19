@@ -49,6 +49,7 @@ with customers_info_w_member as ((select
       customers.first_aff_id, 
       customers.latest_aff_id, 
 			customers.first_mktg_custom_1,
+      customers.first_campaign_id, 
 			customers.first_mktg_custom_2,
 			customers.latest_mktg_custom_1, 
 			customers.latest_mktg_custom_2,

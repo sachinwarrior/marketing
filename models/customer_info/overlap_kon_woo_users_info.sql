@@ -194,10 +194,16 @@ select distinct * from (select
   when kon.latest_order_id is null and woo.latest_product_id is not null then cast(woo.latest_product_id as string)
   when kon.latest_order_id is not null and woo.latest_product_id is not null then concat(kon.latest_order_id, ', ', woo.latest_product_id)
   end latest_order_id,
+
   case when kon.first_mktg_custom_1 is not null and woo.first_mktg_custom_1 is null then cast(kon.first_mktg_custom_1 as string)
   when kon.first_mktg_custom_1 is null and woo.first_mktg_custom_1 is not null then cast(woo.first_mktg_custom_1 as string)
   when kon.first_mktg_custom_1 is not null and woo.first_mktg_custom_1 is not null then concat(kon.first_mktg_custom_1, ', ', woo.first_mktg_custom_1)
   end first_mktg_custom_1,
+
+    case when kon.first_campaign_id is not null and woo.first_campaign_id is null then cast(kon.first_campaign_id as string)
+  when kon.first_campaign_id is null and woo.first_campaign_id is not null then cast(woo.first_campaign_id as string)
+  when kon.first_campaign_id is not null and woo.first_campaign_id is not null then concat(kon.first_campaign_id, ', ', woo.first_campaign_id)
+  end first_campaign_id,
   
   case when kon.first_mktg_custom_2 is not null and woo.first_mktg_custom_2 is null then cast(kon.first_mktg_custom_2 as string)
   when kon.first_mktg_custom_2 is null and woo.first_mktg_custom_2 is not null then cast(woo.first_mktg_custom_2 as string)

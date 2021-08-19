@@ -99,7 +99,8 @@ first_purchase_info as (
       a.order_id as first_product_id,
       a.mktg_custom_1 as first_mktg_custom_1, 
       a.mktg_custom_2 as first_mktg_custom_2,
-      a.mktg_affiliate as first_aff_id
+      a.mktg_affiliate as first_aff_id, 
+      a.utm_campaign,
     FROM 
           {{ref('transactions_dbt')}}  A
     INNER JOIN (
@@ -146,6 +147,21 @@ billing_cycles_table as (select complete_sales_table._customer_user,
 left join (select _customer_user, count(order_id) as refund_sales from {{ref('transactions_dbt')}} where products_purchased like '%Warrior Made Tribe%' and  post_date >= '2020-11-01' and post_status like '%wc-refund%' group by _customer_user ) refund_sales_table
 on complete_sales_table._customer_user = refund_sales_table._customer_user), 
 
+first_woo_campaign_id as (select distinct(_customer_user) as _customer_user, first_campaign_id 
+  from (select _customer_user,
+      case when length(utm_campaign) > 50 then  replace(replace(substr(utm_campaign,1,2), '_',''), '-','')
+            when length(utm_campaign) < 50 and lower(utm_campaign) like '%pack-abs%' and lower(utm_campaign) not like '%offer%' then '3'
+            when length(utm_campaign) < 50 and lower(utm_campaign) like '%sweet%' and lower(utm_campaign) not like '%offer%' then '14'
+            when length(utm_campaign) < 50 and lower(utm_campaign) like '%carbs%' and lower(utm_campaign) not like '%offer%' then '27'
+            when length(utm_campaign) < 50 and lower(utm_campaign) like '%go2protein%' then '17'
+            when length(utm_campaign) <30 and lower(utm_campaign) like '%recipe%' then '30'
+        end first_campaign_id,
+        utm_campaign
+      from first_purchase_info) campaign
+left join (select user_id, user_email from funnels_processed.users_pivot) pivot
+on cast(pivot.user_id as string) = campaign._customer_user
+where first_campaign_id is not null ),
+
 users_pivot as (select user_tracking_id, user_email, user_id, user_registered, 
                 first_name,last_name, 
                 billing_address_1 as address1, billing_address_2 as address2,
@@ -163,7 +179,7 @@ users_pivot as (select user_tracking_id, user_email, user_id, user_registered,
               from funnels_processed.users_pivot),
 
 users_pivot_woo as (select users_pivot.*, type_customer_2.* except(_customer_user), first_purchase_info.* except(_customer_user), latest_purchase_info.* except(_customer_user), 
-  transaction_group_user_id.* except(_customer_user), billing_cycles
+  transaction_group_user_id.* except(_customer_user), billing_cycles, first_campaign_id
 from users_pivot
 left join transaction_group_user_id
 on transaction_group_user_id._customer_user= cast(users_pivot.user_id as string)
@@ -174,6 +190,8 @@ on first_purchase_info._customer_user = cast(users_pivot.user_id as string)
 left join latest_purchase_info 
 on latest_purchase_info._customer_user = cast(users_pivot.user_id as string)
 left join billing_cycles_table
-on billing_cycles_table._customer_user = cast(users_pivot.user_id as string))
+on billing_cycles_table._customer_user = cast(users_pivot.user_id as string)
+left join first_woo_campaign_id 
+on first_woo_campaign_id._customer_user = cast(users_pivot.user_id as string))
 
 select distinct * from users_pivot_woo
