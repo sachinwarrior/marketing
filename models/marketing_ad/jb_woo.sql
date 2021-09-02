@@ -13,10 +13,10 @@ SELECT
     mktg_affiliate AS affiliate,
     products_purchased AS products,
     utm_campaign,
-    case when utm_campaign like '%keto-carbs%'  then 'keto carbs'
-    when utm_campaign like '%abs%' then 'abs' 
-    when utm_campaign like '%go2protein%' or utm_campaign like 'go2protien' then 'go2protein'
-    when utm_campaign like '%keto-sweet%' then 'keto sweet'
+    case when lower(utm_campaign) like '%keto-carbs%'  then 'keto carbs'
+    when lower(utm_campaign) like '%abs%' then 'abs' 
+    when lower(utm_campaign) like '%go2protein%' or utm_campaign like 'go2protien' then 'go2protein'
+    when lower(utm_campaign) like '%keto-sweet%' then 'keto sweet'
     end as funnel, 
     case when _shipping_country is not null then _shipping_country
     else _billing_country 
