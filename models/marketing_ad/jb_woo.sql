@@ -3,7 +3,7 @@
     materialized="table"
 )}}
 SELECT
-    CAST(CAST(_paid_date AS DATETIME) AS DATE) AS order_date,
+    CAST(CAST(post_date AS DATETIME) AS DATE) AS order_date,
     mktg_custom_1 AS mktg_custom_1,
     mktg_custom_2 AS mktg_custom_2,
     COUNT(CAST(trial_take AS INT64)) AS trials,
@@ -24,7 +24,7 @@ SELECT
 FROM
         {{ref('transactions_dbt')}}
 WHERE
-    CAST(_paid_date AS TIMESTAMP) >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24*90 HOUR) and post_status in ('wc-completed','wc-processing') 
+    CAST(post_date AS TIMESTAMP) >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 24*90 HOUR) and post_status in ('wc-completed','wc-processing') 
 GROUP BY
     order_date,
     affiliate,
