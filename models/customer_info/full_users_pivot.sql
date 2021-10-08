@@ -62,7 +62,7 @@ UNION ALL
   current_status, 
   full_order_id, 
   first_order_id, latest_order_id, 
-	first_mktg_custom_1, first_campaign_id, first_mktg_custom_2, 
+	first_mktg_custom_1, cast(first_campaign_id as string) as first_campaign_id, first_mktg_custom_2, 
 	latest_mktg_custom_1, latest_mktg_custom_2,
   cast(first_aff_id as string) as first_aff_id, 
   cast(latest_aff_id as string) as latest_aff_id,
