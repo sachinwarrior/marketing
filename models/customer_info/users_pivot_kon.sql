@@ -129,8 +129,11 @@ from membership_revenue)
 group by customer_id),
 
 
-users_pivot_kon as (select * except(type_customers, customer_id, billing_cycles), 
+users_pivot_kon as (select * except(type_customers, customer_id, billing_cycles, current_status), 
 null as customer_profile_id, 
+case when _schedule_cancelled is not null then 'active'
+else current_status 
+end current_status,
 case when type_customers like '%trial to subscription%' and member_revenue = 0 and ecommerce_revenue !=0  then 'ecommerce to trial' 
 when type_customers is null and member_revenue != 0 then 'trial to subscription' 
 when type_customers is null and member_revenue =0 and ecommerce_revenue !=0 then 'ecommerce only'
