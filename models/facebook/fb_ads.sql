@@ -49,7 +49,7 @@ with fb_digital_abs_1 as (SELECT ad_name,ad_id as fb_ad_id, account_id, account_
 
     fb_acct_id_251974135815477 as (SELECT ad_name,ad_id as fb_ad_id, account_id,account_name,campaign_id, adset_id, campaign_name, adset_name, date_start, date_stop, spend, impressions, ctr, clicks     FROM `wm-gcp-data.fb_acct_id_251974135815477.ads_insights`),
     
-    fb_acct_id_524874365103802 as (SELECT ad_name,ad_id as fb_ad_id, account_id,account_name,campaign_id, adset_id, campaign_name, adset_name, date_start, date_stop, spend, impressions, ctr, clicks     FROM `wm-gcp-data.fb_acct_id_524874365103802.ads_insights`),
+    fb_acct_id_656781831530701 as (SELECT ad_name,ad_id as fb_ad_id, account_id,account_name,campaign_id, adset_id, campaign_name, adset_name, date_start, date_stop, spend, impressions, ctr, clicks     FROM `wm-gcp-data.fb_acct_id_656781831530701.ads_insights`),
     
     fb_acct_id_429656990717616 as (SELECT ad_name,ad_id as fb_ad_id, account_id,account_name,campaign_id, adset_id, campaign_name, adset_name, date_start, date_stop, spend, impressions, ctr, clicks     FROM `wm-gcp-data.fb_acct_id_429656990717616.ads_insights`),
 
@@ -136,7 +136,7 @@ UNION ALL
   FROM fb_acct_id_429656990717616
 UNION ALL 
   SELECT * 
-  FROM fb_acct_id_524874365103802
+  FROM fb_acct_id_656781831530701
 UNION ALL 
   SELECT * 
   FROM fb_acct_id_439432626406719)
